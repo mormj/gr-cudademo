@@ -10,15 +10,6 @@
 #include <gnuradio/io_signature.h>
 #include <cuda_buffer/cuda_buffer.h>
 
-extern void get_block_and_grid(int* minGrid, int* minBlock);
-extern void exec_multiply_const_kernel(const float* in,
-                                       float* out,
-                                       float k,
-                                       int grid_size,
-                                       int block_size,
-                                       size_t n,
-                                       cudaStream_t stream);
-
 namespace gr {
 namespace cudademo {
 
@@ -29,7 +20,6 @@ multiply_const::sptr multiply_const::make(float k)
     return gnuradio::make_block_sptr<multiply_const_impl>(k);
 }
 
-
 /*
  * The private constructor
  */
@@ -39,11 +29,10 @@ multiply_const_impl::multiply_const_impl(float k)
                          1, 1 , sizeof(input_type), cuda_buffer::type),
                      gr::io_signature::make(
                          1, 1 , sizeof(output_type), cuda_buffer::type)),
-      d_k(k)
+      d_kernel(k)
 {
-    get_block_and_grid(&d_min_grid_size, &d_block_size);
-
     check_cuda_errors(cudaStreamCreate(&d_stream));
+    d_kernel.set_stream(d_stream);
 }
 
 /*
@@ -58,13 +47,8 @@ int multiply_const_impl::work(int noutput_items,
     auto in = static_cast<const input_type*>(input_items[0]);
     auto out = static_cast<output_type*>(output_items[0]);
 
-    int gridSize = (noutput_items + d_block_size - 1) / d_block_size;
-
-    exec_multiply_const_kernel(
-        in, out, d_k, gridSize, d_block_size, noutput_items, d_stream);
-
+    d_kernel.launch_default_occupancy(input_items, output_items, noutput_items);
     cudaStreamSynchronize(d_stream);
-
 
     // Tell runtime system how many output items we produced.
     return noutput_items;

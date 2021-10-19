@@ -10,6 +10,7 @@
 # gr-cuda_buffer is required for the CUDA blocks
 ###############################################################################
 find_package(cuda_buffer REQUIRED)
+find_package(cusp REQUIRED)
 
 ########################################################################
 # Setup library
@@ -17,31 +18,9 @@ find_package(cuda_buffer REQUIRED)
 include(GrPlatform) #define LIB_SUFFIX
 
 list(APPEND cudademo_sources
+    cudaerror.cc
     multiply_const_impl.cc
 )
-
-# Need a new library to hold the CUDA specific stuff
-add_library(gnuradio-cudademo-cu STATIC 
-    cudaerror.cc
-    multiply_const.cu
-)
-set_target_properties(gnuradio-cudademo-cu PROPERTIES 
-    POSITION_INDEPENDENT_CODE ON
-    CUDA_VISIBILITY_PRESET "hidden"
-    CUDA_SEPARABLE_COMPILATION ON
-)
-
-# Make a fat binary for supported architectures
-# Compile for supported archs; CMake workaround, see: https://stackoverflow.com/a/54505975/73878
-target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_60,code=sm_60>")
-target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_61,code=sm_61>")
-target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_62,code=sm_62>")
-target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_70,code=sm_70>")
-target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_72,code=sm_72>")
-target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_75,code=sm_75>")
-# target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_80,code=sm_80>")
-# target_compile_options(gnuradio-cudademo-cu PRIVATE "$<$<COMPILE_LANGUAGE:CUDA>:SHELL:-gencode arch=compute_86,code=sm_86>")
-
 
 set(cudademo_sources "${cudademo_sources}" PARENT_SCOPE)
 if(NOT cudademo_sources)
@@ -52,9 +31,8 @@ endif(NOT cudademo_sources)
 add_library(gnuradio-cudademo SHARED ${cudademo_sources})
 target_link_libraries(gnuradio-cudademo PUBLIC gnuradio::gnuradio-runtime
     ${CUDA_BUFFER_LIBRARIES}
+    ${CUSP_LIBRARIES}
     )
-
-target_link_libraries(gnuradio-cudademo PRIVATE gnuradio-cudademo-cu)
 
 target_include_directories(gnuradio-cudademo
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
