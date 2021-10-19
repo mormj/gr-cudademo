@@ -8,6 +8,7 @@
 #include "cudaerror.h"
 #include "multiply_const_impl.h"
 #include <gnuradio/io_signature.h>
+#include <cuda_buffer/cuda_buffer.h>
 
 extern void get_block_and_grid(int* minGrid, int* minBlock);
 extern void exec_multiply_const_kernel(const float* in,
@@ -35,16 +36,14 @@ multiply_const::sptr multiply_const::make(float k)
 multiply_const_impl::multiply_const_impl(float k)
     : gr::sync_block("multiply_const",
                      gr::io_signature::make(
-                         1 /* min inputs */, 1 /* max inputs */, sizeof(input_type)),
+                         1, 1 , sizeof(input_type), cuda_buffer::type),
                      gr::io_signature::make(
-                         1 /* min outputs */, 1 /*max outputs */, sizeof(output_type))),
+                         1, 1 , sizeof(output_type), cuda_buffer::type)),
       d_k(k)
 {
     get_block_and_grid(&d_min_grid_size, &d_block_size);
 
     check_cuda_errors(cudaStreamCreate(&d_stream));
-    check_cuda_errors(cudaMalloc((void**)&d_dev_in, d_max_buffer_size));
-    check_cuda_errors(cudaMalloc((void**)&d_dev_out, d_max_buffer_size));
 }
 
 /*
@@ -59,17 +58,10 @@ int multiply_const_impl::work(int noutput_items,
     auto in = static_cast<const input_type*>(input_items[0]);
     auto out = static_cast<output_type*>(output_items[0]);
 
-    check_cuda_errors(cudaMemcpyAsync(
-        d_dev_in, in, noutput_items * sizeof(float), cudaMemcpyHostToDevice, d_stream));
-
     int gridSize = (noutput_items + d_block_size - 1) / d_block_size;
 
-    std::cout << gridSize << " " << d_block_size << std::endl;
     exec_multiply_const_kernel(
-        d_dev_in, d_dev_out, d_k, gridSize, d_block_size, noutput_items, d_stream);
-
-    cudaMemcpyAsync(
-        out, d_dev_out, noutput_items * sizeof(float), cudaMemcpyDeviceToHost, d_stream);
+        in, out, d_k, gridSize, d_block_size, noutput_items, d_stream);
 
     cudaStreamSynchronize(d_stream);
 

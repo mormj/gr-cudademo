@@ -38,7 +38,7 @@ class qa_multiply_const(gr_unittest.TestCase):
         mc = multiply_const(k)
         snk = blocks.vector_sink_f()
 
-        self.tb.connect(src,mc,snk)
+        self.tb.connect(src, mc, snk)
 
         self.tb.run()
 

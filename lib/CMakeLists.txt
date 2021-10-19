@@ -6,6 +6,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
+###############################################################################
+# gr-cuda_buffer is required for the CUDA blocks
+###############################################################################
+find_package(cuda_buffer REQUIRED)
+
 ########################################################################
 # Setup library
 ########################################################################
@@ -45,12 +50,16 @@ if(NOT cudademo_sources)
 endif(NOT cudademo_sources)
 
 add_library(gnuradio-cudademo SHARED ${cudademo_sources})
-target_link_libraries(gnuradio-cudademo PUBLIC gnuradio::gnuradio-runtime)
+target_link_libraries(gnuradio-cudademo PUBLIC gnuradio::gnuradio-runtime
+    ${CUDA_BUFFER_LIBRARIES}
+    )
+
 target_link_libraries(gnuradio-cudademo PRIVATE gnuradio-cudademo-cu)
 
 target_include_directories(gnuradio-cudademo
     PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>
     PUBLIC $<INSTALL_INTERFACE:include>
+    ${CUDA_BUFFER_INCLUDE_DIRS}
   )
 set_target_properties(gnuradio-cudademo PROPERTIES DEFINE_SYMBOL "gnuradio_cudademo_EXPORTS")
 

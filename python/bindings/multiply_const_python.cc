@@ -33,7 +33,7 @@ void bind_multiply_const(py::module& m)
     using multiply_const    = gr::cudademo::multiply_const;
 
 
-    py::class_<multiply_const,
+    py::class_<multiply_const, gr::sync_block, gr::block, gr::basic_block,
         std::shared_ptr<multiply_const>>(m, "multiply_const", D(multiply_const))
 
         .def(py::init(&multiply_const::make),
