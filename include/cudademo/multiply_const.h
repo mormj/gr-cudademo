@@ -33,6 +33,8 @@ public:
      * creating new instances.
      */
     static sptr make(float k);
+
+    virtual void set_k(float k) = 0;
 };
 
 } // namespace cudademo

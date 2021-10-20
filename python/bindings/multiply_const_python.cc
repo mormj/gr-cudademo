@@ -41,7 +41,7 @@ void bind_multiply_const(py::module& m)
            D(multiply_const,make)
         )
         
-
+        .def("set_k", &multiply_const::set_k);
 
 
         ;
