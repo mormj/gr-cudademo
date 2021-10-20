@@ -59,7 +59,6 @@ int multiply_const_impl::work(int noutput_items,
     auto out = static_cast<output_type*>(output_items[0]);
 
     int gridSize = (noutput_items + d_block_size - 1) / d_block_size;
-
     exec_multiply_const_kernel(
         in, out, d_k, gridSize, d_block_size, noutput_items, d_stream);
 
