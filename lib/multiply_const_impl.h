@@ -32,7 +32,7 @@ public:
 
     virtual void set_k(float k)
     {
-        d_k = k;
+        d_kernel.set_k(k);
     }
 };
 
