@@ -63,8 +63,6 @@ int multiply_const_impl::work(int noutput_items,
         d_dev_in, in, noutput_items * sizeof(float), cudaMemcpyHostToDevice, d_stream));
 
     int gridSize = (noutput_items + d_block_size - 1) / d_block_size;
-
-    std::cout << gridSize << " " << d_block_size << std::endl;
     exec_multiply_const_kernel(
         d_dev_in, d_dev_out, d_k, gridSize, d_block_size, noutput_items, d_stream);
 
