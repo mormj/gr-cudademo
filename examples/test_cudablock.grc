@@ -105,7 +105,7 @@ blocks:
     bus_structure: null
     coordinate: [376, 252.0]
     rotation: 0
-    state: true
+    state: enabled
 - name: cudademo_multiply_const_0
   id: cudademo_multiply_const
   parameters:

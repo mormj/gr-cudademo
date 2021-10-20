@@ -58,6 +58,8 @@ int multiply_const_impl::work(int noutput_items,
     auto in = static_cast<const input_type*>(input_items[0]);
     auto out = static_cast<output_type*>(output_items[0]);
 
+    std::cout << d_k << std::endl;
+
     int gridSize = (noutput_items + d_block_size - 1) / d_block_size;
     exec_multiply_const_kernel(
         in, out, d_k, gridSize, d_block_size, noutput_items, d_stream);
@@ -71,3 +73,4 @@ int multiply_const_impl::work(int noutput_items,
 
 } /* namespace cudademo */
 } /* namespace gr */
+
