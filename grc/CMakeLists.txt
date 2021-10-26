@@ -7,5 +7,7 @@
 #
 
 install(FILES
-    cudademo_multiply_const.block.yml DESTINATION share/gnuradio/grc/blocks
+    cudademo_multiply_const.block.yml 
+    cuda.domain.yml
+    DESTINATION share/gnuradio/grc/blocks
 )

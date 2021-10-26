@@ -50,7 +50,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [416, 44.0]
+    coordinate: [368, 44.0]
     rotation: 0
     state: true
 - name: samp_rate
@@ -119,7 +119,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [584, 252.0]
+    coordinate: [616, 148.0]
     rotation: 0
     state: true
 - name: qtgui_time_sink_x_0
@@ -216,7 +216,7 @@ blocks:
     bus_sink: false
     bus_source: false
     bus_structure: null
-    coordinate: [800, 228.0]
+    coordinate: [888, 380.0]
     rotation: 0
     state: true
 

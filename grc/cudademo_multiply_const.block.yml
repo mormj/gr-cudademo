@@ -12,11 +12,11 @@ parameters:
   dtype: float
 inputs:
 - label: in
-  domain: stream
+  domain: cuda
   dtype: float
 outputs:
 - label: out
-  domain: stream
+  domain: cuda
   dtype: float
 
 
